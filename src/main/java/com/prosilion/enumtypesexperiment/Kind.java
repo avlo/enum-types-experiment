@@ -1,5 +1,8 @@
 package com.prosilion.enumtypesexperiment;
 
+import lombok.Getter;
+
+@Getter
 public enum Kind {
   TEXT_NOTE(1, "text_note"),
   BADGE_AWARD_EVENT(8, "badge_award_event");

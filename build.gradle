@@ -24,12 +24,25 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-//    compileOnly 'org.projectlombok:lombok:1.18.30'
+    def apacheCommonsLang3 = rootProject.property("nostr-java.apacheCommonsLang3")
+    def jacksonModuleAfterburner = rootProject.property("nostr-java.jacksonModuleAfterburner")
+    def bouncyCastle = rootProject.property("nostr-java.bouncyCastle")
+    def lombok = rootProject.property("nostr-java.lombok")
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-//    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-//    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'com.fasterxml.jackson.module:jackson-module-afterburner:' + jacksonModuleAfterburner
+    implementation 'org.bouncycastle:bcprov-jdk18on:' + bouncyCastle
+    implementation 'org.projectlombok:lombok:' + lombok
+    implementation 'org.apache.commons:commons-lang3:' + apacheCommonsLang3
+
+    annotationProcessor 'org.projectlombok:lombok:' + lombok
+    
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.projectlombok:lombok:' + lombok
+    
+    testAnnotationProcessor 'org.projectlombok:lombok:' + lombok
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
