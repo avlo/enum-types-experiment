@@ -2,34 +2,24 @@ package com.prosilion.enumtypesexperiment.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.prosilion.enumtypesexperiment.Kind;
 import com.prosilion.enumtypesexperiment.NostrException;
 import com.prosilion.enumtypesexperiment.crypto.HexStringValidator;
-import com.prosilion.enumtypesexperiment.crypto.NostrUtil;
 import com.prosilion.enumtypesexperiment.crypto.bech32.Bech32;
 import com.prosilion.enumtypesexperiment.crypto.bech32.Bech32Prefix;
-import java.beans.Transient;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static com.prosilion.enumtypesexperiment.event.Encoder.ENCODER_MAPPED_AFTERBURNER;
-
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class GenericEventDto implements IEvent, ISignableDto {
+public class GenericEventDto implements GenericEventDtoIF {
   private static final Log log = LogFactory.getLog(GenericEventDto.class);
 
   @Key
@@ -66,40 +56,49 @@ public class GenericEventDto implements IEvent, ISignableDto {
   @JsonDeserialize(using = SignatureDeserializer.class)
   private Signature signature;
 
-  @JsonIgnore
-  @EqualsAndHashCode.Exclude
-  private byte[] _serializedEvent;
+//  @JsonIgnore
+//  @EqualsAndHashCode.Exclude
+//  private final byte[] _serializedEvent;
 
-  @JsonIgnore
-  @EqualsAndHashCode.Exclude
-  private Integer nip;
+//  public GenericEventDto(@NonNull String id) {
+//    this.tags = new ArrayList<>();
+//    setId(id);
+//  }
 
-  public GenericEventDto(@NonNull String id) {
-    this.tags = new ArrayList<>();
-    setId(id);
+  public GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull Long createdAt, @NonNull Signature signature) {
+    this(id, pubKey, kind, new ArrayList<>(), createdAt, "", signature);
   }
 
-  public GenericEventDto(@NonNull PublicKey pubKey, @NonNull Kind kind) throws NostrException, NoSuchAlgorithmException {
-    this(pubKey, kind, new ArrayList<>(), "");
+  public GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull Long createdAt, @NonNull List<BaseTag> tags, @NonNull Signature signature) throws NostrException, NoSuchAlgorithmException {
+    this(id, pubKey, kind, tags, createdAt, "", signature);
   }
 
-  public GenericEventDto(@NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags) throws NostrException, NoSuchAlgorithmException {
-    this(pubKey, kind, tags, "");
-  }
-
-  public GenericEventDto(@NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags,
-                         @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+  public GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull Long createdAt, @NonNull String content, @NonNull Signature signature) {
+    this.id = validateId(id);
     this.pubKey = pubKey;
     this.kind = kind.getValue();
     this.tags = tags;
+    this.createdAt = createdAt;
     this.content = content;
-    this._serializedEvent = this.serialize().getBytes(StandardCharsets.UTF_8);
-    this.id = NostrUtil.bytesToHex(NostrUtil.sha256(_serializedEvent));
-    this.createdAt = Instant.now().getEpochSecond();
+    this.signature = signature;
   }
 
-  public void setId(String id) {
-    this.id = HexStringValidator.validateHex(id, 64);
+  /**
+   * should only be used by GenericEventEntity
+   */
+  protected GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull Long createdAt, @NonNull String content) {
+    this.id = validateId(id);
+    this.pubKey = pubKey;
+    this.kind = kind.getValue();
+    this.tags = tags;
+    this.createdAt = createdAt;
+    this.content = content;
+  }
+
+  private String validateId(@NonNull String id) {
+    assert Boolean.parseBoolean(HexStringValidator.validateHex(id, 64)) :
+        new AssertionError(String.format("Invalid id [%s]. Length must be exactly 64 but was [%s]", id, id.length()));
+    return id;
   }
 
   @Override
@@ -111,32 +110,15 @@ public class GenericEventDto implements IEvent, ISignableDto {
     }
   }
 
-  public void addTag(BaseTag tag) {
-    tags.add(tag);
-  }
-
-  private String serialize() throws NostrException {
-    var mapper = ENCODER_MAPPED_AFTERBURNER;
-    var arrayNode = JsonNodeFactory.instance.arrayNode();
-
-    try {
-      arrayNode.add(0);
-      arrayNode.add(this.pubKey.toString());
-      arrayNode.add(this.createdAt);
-      arrayNode.add(this.kind);
-      arrayNode.add(mapper.valueToTree(tags));
-      arrayNode.add(this.content);
-
-      return mapper.writeValueAsString(arrayNode);
-    } catch (JsonProcessingException e) {
-      throw new NostrException(e);
-    }
-  }
-
-  @Transient
-  @Override
-  public Supplier<ByteBuffer> getByeArraySupplier() {
-    log.info(String.format("Serialized event: %s", new String(this.get_serializedEvent())));
-    return () -> ByteBuffer.wrap(this.get_serializedEvent());
-  }
+//  @Override
+//  public void addTag(BaseTag tag) {
+//    tags.add(tag);
+//  }
+//
+//  @Transient
+//  @Override
+//  public Supplier<ByteBuffer> getByeArraySupplier() {
+//    log.info(String.format("Serialized event: %s", new String(this.get_serializedEvent())));
+//    return () -> ByteBuffer.wrap(this.get_serializedEvent());
+//  }
 }
