@@ -1,32 +1,19 @@
 package com.prosilion.enumtypesexperiment.event;
 
 import com.prosilion.enumtypesexperiment.Kind;
-//public class TextNoteEvent extends GenericEventEntity {
-//  private static final Log log = LogFactory.getLog(TextNoteEvent.class);
-//
-//  public TextNoteEvent() {
-//    super(Kind.TEXT_NOTE, Type.REPUTATION);
-//  }
-//  
-//}
-
-import com.prosilion.enumtypesexperiment.Kind;
 import com.prosilion.enumtypesexperiment.NostrException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.lang.NonNull;
 
 @Event(name = "Text Note")
-public class TextNoteEvent extends NIP01Event {
-  private static final Log log = LogFactory.getLog(TextNoteEvent.class);
+public class TextNoteEventRxR extends NIP01Event {
 
-  public TextNoteEvent(@NonNull Identity identity, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+  public TextNoteEventRxR(@NonNull Identity identity, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
     super(identity, Kind.TEXT_NOTE, content);
   }
 
-  public TextNoteEvent(@NonNull Identity identity, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+  public TextNoteEventRxR(@NonNull Identity identity, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
     super(identity, Kind.TEXT_NOTE, tags, content);
   }
 

@@ -56,7 +56,7 @@ public class GenericEventEntity implements GenericEventEntityIF {
 //  @EqualsAndHashCode.Exclude
 //  private final Integer kind;
   @Override
-  public Integer getKind() {
+  public Kind getKind() {
     return genericEventDto.getKind();
   }
 

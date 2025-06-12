@@ -20,7 +20,7 @@ public interface GenericEventEntityIF extends GenericEventDtoIF, IEvent, ISignab
       arrayNode.add(0);
       arrayNode.add(getPubKey().toString());
       arrayNode.add(getCreatedAt());
-      arrayNode.add(getKind());
+      arrayNode.add(getKind().getValue());
       arrayNode.add(ENCODER_MAPPED_AFTERBURNER.valueToTree(getTags()));
       arrayNode.add(getContent());
 

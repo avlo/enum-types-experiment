@@ -1,31 +1,24 @@
 package com.prosilion.enumtypesexperiment.event;
 
 import com.prosilion.enumtypesexperiment.Kind;
-import com.prosilion.enumtypesexperiment.event.AbstractBadgeAwardEvent.Type;
+import com.prosilion.enumtypesexperiment.NostrException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import lombok.Getter;
+import org.springframework.lang.NonNull;
 
 @Getter
-public abstract class AbstractBadgeAwardEvent<T extends Kind, U extends Type> {
-  private final T kind;
-  private final U type;
+public abstract class AbstractBadgeAwardEvent<T extends Type> extends GenericEventEntity {
+  private final Kind kind;
+  private final T type;
 
-  public AbstractBadgeAwardEvent(T kind, U type) {
-    this.kind = kind;
+  public AbstractBadgeAwardEvent(
+      @NonNull T type,
+      @NonNull Identity identity, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+    super(identity, kind, tags, content);
+    this.kind = Kind.BADGE_AWARD_EVENT;
     this.type = type;
   }
 
   public abstract void doSomething();
-
-  @Getter
-  public enum Type {
-    UPVOTE("upvote"),
-    DOWNVOTE("downvote"),
-    REPUTATION("reputation");
-
-    private final String name;
-
-    Type(String name) {
-      this.name = name;
-    }
-  }
 }

@@ -1,6 +1,5 @@
 package com.prosilion.enumtypesexperiment.event;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.prosilion.enumtypesexperiment.Kind;
@@ -11,14 +10,14 @@ import com.prosilion.enumtypesexperiment.crypto.bech32.Bech32Prefix;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.lang.NonNull;
 
-@Data
+@Getter
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class GenericEventDto implements GenericEventDtoIF {
@@ -112,7 +111,20 @@ public class GenericEventDto implements GenericEventDtoIF {
     }
   }
 
-//  @Override
+  @Override
+  public Kind getKind() {
+    return Kind.valueOf(kind);
+  }
+
+  public void setKind(Kind kind) {
+    this.kind = kind.getValue();
+  }
+
+  public void setSignature(@org.springframework.lang.NonNull Signature signature) {
+    this.signature = signature;
+  }
+
+  //  @Override
 //  public void addTag(BaseTag tag) {
 //    tags.add(tag);
 //  }

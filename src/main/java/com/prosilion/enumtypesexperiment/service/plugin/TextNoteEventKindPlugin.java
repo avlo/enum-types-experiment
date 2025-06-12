@@ -8,21 +8,21 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TextNoteEventTypePlugin<T extends TextNoteEvent, U extends Kind> implements EventTypePluginIF<T, U> {
-  private static final Log log = LogFactory.getLog(TextNoteEventTypePlugin.class);
+public class TextNoteEventKindPlugin<T extends TextNoteEvent> implements EventKindPluginIF<T> {
+  private static final Log log = LogFactory.getLog(TextNoteEventKindPlugin.class);
 
   @Override
   public void processIncomingEvent(@NonNull T event) {
     log.info("\ninfo processIncomingEvent 111111111111111111111111111");
     log.info("info processIncomingEvent 111111111111111111111111111");
     log.debug(String.format("processing incoming TEXT NOTE EVENT: [%s]", event.getKind()));
-    event.doSomething();
+    log.info(event.getKind());
     log.info("info processIncomingEvent 111111111111111111111111111");
     log.info("info processIncomingEvent 111111111111111111111111111\n");
   }
 
   @Override
-  public U getKind() {
-    return (U) Kind.TEXT_NOTE;
+  public Kind getKind() {
+    return Kind.TEXT_NOTE;
   }
 }

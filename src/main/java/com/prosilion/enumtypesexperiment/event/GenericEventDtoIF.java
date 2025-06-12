@@ -1,5 +1,6 @@
 package com.prosilion.enumtypesexperiment.event;
 
+import com.prosilion.enumtypesexperiment.Kind;
 import java.util.List;
 
 public interface GenericEventDtoIF extends IEvent
@@ -11,7 +12,7 @@ public interface GenericEventDtoIF extends IEvent
 
   Long getCreatedAt();
 
-  Integer getKind();
+  Kind getKind();
 
   List<BaseTag> getTags();
 
@@ -47,4 +48,6 @@ public interface GenericEventDtoIF extends IEvent
 //  boolean canEqual(Object other);
 
   int hashCode();
+
+//  void setKind(Kind kind);
 }

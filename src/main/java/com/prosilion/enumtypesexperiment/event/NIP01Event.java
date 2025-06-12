@@ -1,0 +1,27 @@
+package com.prosilion.enumtypesexperiment.event;
+
+import com.prosilion.enumtypesexperiment.Kind;
+import com.prosilion.enumtypesexperiment.NostrException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import org.springframework.lang.NonNull;
+
+//TODO: remove this impl, doesn't do anything unique, all superclasses can call right through to GenericEventEntity
+public abstract class NIP01Event extends GenericEventEntity {
+
+    public NIP01Event(@NonNull Identity identity, @NonNull Kind kind) throws NostrException, NoSuchAlgorithmException {
+        super(identity, kind);
+    }
+
+    public NIP01Event(@NonNull Identity identity, @NonNull Kind kind, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+        super(identity, kind, content);
+    }
+
+    public NIP01Event(@NonNull Identity identity, @NonNull Kind kind, @NonNull List<BaseTag> tags) throws NostrException, NoSuchAlgorithmException {
+        super(identity, kind, tags);
+    }
+
+    public NIP01Event(@NonNull Identity identity, @NonNull Kind kind, List<BaseTag> tags, String content) throws NostrException, NoSuchAlgorithmException {
+        super(identity, kind, tags, content);
+    }
+}

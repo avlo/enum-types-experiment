@@ -1,17 +1,18 @@
 package com.prosilion.enumtypesexperiment.service.plugin;
 
 import com.prosilion.enumtypesexperiment.Kind;
-import com.prosilion.enumtypesexperiment.event.AbstractBadgeAwardEvent.Type;
 import com.prosilion.enumtypesexperiment.event.BadgeAwardUpvoteEvent;
+import com.prosilion.enumtypesexperiment.event.Type;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BadgeAwardUpvoteEventTypePlugin<
-    T extends BadgeAwardUpvoteEvent,
     U extends Kind,
-    V extends Type> implements AbstractEventTypePluginIF<T, U, V> {
+    V extends Type,
+    T extends BadgeAwardUpvoteEvent<V>>
+    implements AbstractEventTypePluginIF<U, V, T> {
   private static final Log log = LogFactory.getLog(BadgeAwardUpvoteEventTypePlugin.class);
 
   @Override
