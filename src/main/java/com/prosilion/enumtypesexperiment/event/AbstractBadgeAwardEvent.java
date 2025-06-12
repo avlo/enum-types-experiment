@@ -2,7 +2,9 @@ package com.prosilion.enumtypesexperiment.event;
 
 import com.prosilion.enumtypesexperiment.Kind;
 import com.prosilion.enumtypesexperiment.event.AbstractBadgeAwardEvent.Type;
+import lombok.Getter;
 
+@Getter
 public abstract class AbstractBadgeAwardEvent<T extends Kind, U extends Type> {
   private final T kind;
   private final U type;
@@ -14,14 +16,7 @@ public abstract class AbstractBadgeAwardEvent<T extends Kind, U extends Type> {
 
   public abstract void doSomething();
 
-  public T getKind() {
-    return kind;
-  }
-
-  public U getType() {
-    return type;
-  }
-
+  @Getter
   public enum Type {
     UPVOTE("upvote"),
     DOWNVOTE("downvote"),
@@ -31,10 +26,6 @@ public abstract class AbstractBadgeAwardEvent<T extends Kind, U extends Type> {
 
     Type(String name) {
       this.name = name;
-    }
-
-    public String getName() {
-      return name;
     }
   }
 }
