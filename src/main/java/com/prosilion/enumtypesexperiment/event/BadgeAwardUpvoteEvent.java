@@ -14,18 +14,26 @@ public class BadgeAwardUpvoteEvent<T extends Type> extends AbstractBadgeAwardEve
 
   public BadgeAwardUpvoteEvent(
       @NonNull Identity identity,
-      @NonNull UpvoteTags upvoteTags,
+      @NonNull Identity upvotedUser,
       @NonNull String content) throws NostrException, NoSuchAlgorithmException {
-    super((T) Type.UPVOTE, identity, Kind.BADGE_AWARD_EVENT, upvoteTags.getUpvoteTags(), content);
+    super((T) Type.UPVOTE, identity, Kind.BADGE_AWARD_EVENT,
+        new Vote(
+            identity.getPublicKey(),
+            upvotedUser.getPublicKey(),
+            Type.UPVOTE).getVoteTags(),
+        content);
   }
 
   public BadgeAwardUpvoteEvent(
       @NonNull Identity identity,
-      @NonNull UpvoteTags upvoteTags,
+      @NonNull Identity upvotedUser,
       @NonNull List<BaseTag> tags,
       @NonNull String content) throws NostrException, NoSuchAlgorithmException {
     super((T) Type.UPVOTE, identity, Kind.BADGE_AWARD_EVENT,
-        Stream.concat(upvoteTags.getUpvoteTags().stream(), tags.stream()).toList()
+        Stream.concat(new Vote(
+            identity.getPublicKey(),
+            upvotedUser.getPublicKey(),
+            Type.UPVOTE).getVoteTags().stream(), tags.stream()).toList()
         , content);
   }
 
