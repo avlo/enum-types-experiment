@@ -17,12 +17,8 @@ public class BadgeAwardDownvoteEventTypePlugin<
 
   @Override
   public void processIncomingEvent(T event) {
-    log.info("\ninfo processIncomingEvent 444444444444444444444444");
-    log.info("info processIncomingEvent 444444444444444444444444");
     log.debug(String.format("processing incoming DOWNVOTE EVENT: [%s]", event.getKind()));
     event.doSomething();
-    log.info("info processIncomingEvent 444444444444444444444444");
-    log.info("info processIncomingEvent 444444444444444444444444\n");
   }
 
   @Override

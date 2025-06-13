@@ -17,12 +17,8 @@ public class BadgeAwardUpvoteEventTypePlugin<
 
   @Override
   public void processIncomingEvent(T event) {
-    log.info("\ninfo processIncomingEvent 33333333333333333333333333");
-    log.info("info processIncomingEvent 33333333333333333333333333");
     log.debug(String.format("processing incoming UPVOTE EVENT: [%s]", event.getKind()));
     event.doSomething();
-    log.info("info processIncomingEvent 33333333333333333333333333");
-    log.info("info processIncomingEvent 33333333333333333333333333\n");
   }
 
   @Override

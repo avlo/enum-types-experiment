@@ -13,12 +13,8 @@ public class TextNoteEventKindPlugin<T extends TextNoteEvent> implements EventKi
 
   @Override
   public void processIncomingEvent(@NonNull T event) {
-    log.info("\ninfo processIncomingEvent 111111111111111111111111111");
-    log.info("info processIncomingEvent 111111111111111111111111111");
     log.debug(String.format("processing incoming TEXT NOTE EVENT: [%s]", event.getKind()));
     log.info(event.getKind());
-    log.info("info processIncomingEvent 111111111111111111111111111");
-    log.info("info processIncomingEvent 111111111111111111111111111\n");
   }
 
   @Override
