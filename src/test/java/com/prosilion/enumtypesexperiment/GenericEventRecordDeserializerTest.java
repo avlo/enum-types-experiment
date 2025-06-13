@@ -3,6 +3,7 @@ package com.prosilion.enumtypesexperiment;
 import com.prosilion.enumtypesexperiment.event.BaseTag;
 import com.prosilion.enumtypesexperiment.event.Encoder;
 import com.prosilion.enumtypesexperiment.event.GenericEventRecord;
+import com.prosilion.enumtypesexperiment.event.IDecoder;
 import com.prosilion.enumtypesexperiment.event.IdentifierTag;
 import com.prosilion.enumtypesexperiment.event.PublicKey;
 import com.prosilion.enumtypesexperiment.event.Signature;
@@ -31,15 +32,23 @@ public class GenericEventRecordDeserializerTest {
   GenericEventRecord jsonNode;
 
   public GenericEventRecordDeserializerTest(@Value("classpath:matching_kind_author_identitytag_filter_input.json") Resource resourceJson) throws IOException {
+    implicitTestDeserializer(resourceJson);
+  }
+
+  private void implicitTestDeserializer(Resource resource) throws IOException {
+    String jsonContent = new String(
+        Files.readAllBytes(
+            resource.getFile().toPath()));
+
+//    deserializer/unmarshall == string/json -> object    
     jsonNode = Encoder.ENCODER_MAPPED_AFTERBURNER.readValue(
-        new String(
-            Files.readAllBytes(
-                resourceJson.getFile().toPath())),
+        jsonContent,
         GenericEventRecord.class);
   }
 
+
   @Test
-  void testDerializer() throws IOException {
+  void testSerializer() throws IOException {
     IdentifierTag dTag = new IdentifierTag("superconductor_subscriber_id-0");
     List<BaseTag> tags = new ArrayList<>();
     tags.add(dTag);
@@ -52,7 +61,6 @@ public class GenericEventRecordDeserializerTest {
         "matching kind, author, identity-tag filter test",
         Signature.fromString("86f25c161fec51b9e441bdb2c09095d5f8b92fdce66cb80d9ef09fad6ce53eaa14c5e16787c42f5404905536e43ebec0e463aee819378a4acbe412c533e60546"));
 
-    JsonContent<GenericEventRecord> write = tester.write(genericEventRecord);
 
     String expectedJson = """
         [
@@ -74,6 +82,13 @@ public class GenericEventRecordDeserializerTest {
         ]
         """;
 
+// serializer/marshall == object -> string/json
+// spring JsonTester confirming valid json created when serializing genericEventRecord     
+    JsonContent<GenericEventRecord> write = tester.write(genericEventRecord);
     assertThat(write).isEqualToJson(expectedJson);
+
+// using spring JsonText to further validate IDecoder.I_DECODER_MAPPER_AFTERBURNER serialization works as expected 
+    String s = IDecoder.I_DECODER_MAPPER_AFTERBURNER.writeValueAsString(genericEventRecord);
+    assertThat(write).isEqualToJson(s);
   }
 }

@@ -8,26 +8,26 @@ import com.prosilion.enumtypesexperiment.crypto.HexStringValidator;
 import java.util.List;
 
 @JsonTypeName("EVENT")
-@JsonTypeInfo(include= JsonTypeInfo.As.WRAPPER_ARRAY, use= JsonTypeInfo.Id.NAME)
+@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_ARRAY, use = JsonTypeInfo.Id.NAME)
 public record GenericEventRecord(
     String id,
-    
+
     @JsonProperty("pubkey")
     PublicKey publicKey,
-    
+
     @JsonProperty("created_at")
     Long createdAt,
-    
+
     Kind kind,
-    
+
     @JsonProperty("tags")
     List<BaseTag> baseTags,
-    
+
     String content,
-    
+
     @JsonProperty("sig")
     Signature signature) {
-  
+
   public GenericEventRecord {
     id = HexStringValidator.validateHex(id, 64);
   }
