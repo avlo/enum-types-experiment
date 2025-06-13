@@ -13,27 +13,6 @@ public interface GenericEventEntityIF extends GenericEventDtoIF, IEvent, ISignab
 //  @Override
 //  String toBech32() throws NostrException;
 
-  default String serialize() throws NostrException {
-    var arrayNode = JsonNodeFactory.instance.arrayNode();
-
-    try {
-      arrayNode.add(0);
-      arrayNode.add(getPubKey().toString());
-      arrayNode.add(getCreatedAt());
-      arrayNode.add(getKind().getValue());
-      arrayNode.add(ENCODER_MAPPED_AFTERBURNER.valueToTree(getTags()));
-      arrayNode.add(getContent());
-
-      return ENCODER_MAPPED_AFTERBURNER.writeValueAsString(arrayNode);
-    } catch (JsonProcessingException e) {
-      throw new NostrException(e);
-    }
-  }
-
-  @Transient
-  @Override
-  Supplier<ByteBuffer> getByeArraySupplier();
-
 //  boolean equals(Object o);
 
 //  boolean canEqual(Object other);

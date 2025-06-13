@@ -1,5 +1,6 @@
 package com.prosilion.enumtypesexperiment.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.prosilion.enumtypesexperiment.Kind;
@@ -7,12 +8,17 @@ import com.prosilion.enumtypesexperiment.NostrException;
 import com.prosilion.enumtypesexperiment.crypto.HexStringValidator;
 import com.prosilion.enumtypesexperiment.crypto.bech32.Bech32;
 import com.prosilion.enumtypesexperiment.crypto.bech32.Bech32Prefix;
+import java.beans.Transient;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.lang.NonNull;
@@ -57,10 +63,6 @@ public class GenericEventDto implements GenericEventDtoIF {
   @JsonDeserialize(using = SignatureDeserializer.class)
   private Signature signature;
 
-//  @JsonIgnore
-//  @EqualsAndHashCode.Exclude
-//  private final byte[] _serializedEvent;
-
 //  public GenericEventDto(@NonNull String id) {
 //    this.tags = new ArrayList<>();
 //    setId(id);
@@ -87,8 +89,7 @@ public class GenericEventDto implements GenericEventDtoIF {
   /**
    * should only be used by GenericEventEntity
    */
-  protected GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull Long createdAt, @NonNull String content) {
-    this.id = validateId(id);
+  protected GenericEventDto(@NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull Long createdAt, @NonNull String content) {
     this.pubKey = pubKey;
     this.kind = kind.getValue();
     this.tags = tags;
@@ -97,8 +98,7 @@ public class GenericEventDto implements GenericEventDtoIF {
   }
 
   private String validateId(@NonNull String id) {
-    assert Boolean.parseBoolean(HexStringValidator.validateHex(id, 64)) :
-        new AssertionError(String.format("Invalid id [%s]. Length must be exactly 64 but was [%s]", id, id.length()));
+    HexStringValidator.validateHex(id, 64);
     return id;
   }
 
@@ -111,6 +111,10 @@ public class GenericEventDto implements GenericEventDtoIF {
     }
   }
 
+  public void setId(@NonNull String id) {
+    this.id = validateId(id);
+  }
+
   @Override
   public Kind getKind() {
     return Kind.valueOf(kind);
@@ -120,19 +124,19 @@ public class GenericEventDto implements GenericEventDtoIF {
     this.kind = kind.getValue();
   }
 
-  public void setSignature(@org.springframework.lang.NonNull Signature signature) {
+  public void setSignature(@NonNull Signature signature) {
     this.signature = signature;
   }
 
-  //  @Override
-//  public void addTag(BaseTag tag) {
-//    tags.add(tag);
-//  }
-//
-//  @Transient
-//  @Override
-//  public Supplier<ByteBuffer> getByeArraySupplier() {
-//    log.info(String.format("Serialized event: %s", new String(this.get_serializedEvent())));
-//    return () -> ByteBuffer.wrap(this.get_serializedEvent());
-//  }
+//  @JsonIgnore
+//  @EqualsAndHashCode.Exclude
+//  private byte[] _serializedEvent;
+  
+  @Transient
+  @Override
+  public Supplier<ByteBuffer> getByteArraySupplier() throws NostrException {
+    byte[] serializedEvent = serialize().getBytes(StandardCharsets.UTF_8);
+    log.info(String.format("Serialized event: %s", new String(serializedEvent)));
+    return () -> ByteBuffer.wrap(serializedEvent);
+  }
 }

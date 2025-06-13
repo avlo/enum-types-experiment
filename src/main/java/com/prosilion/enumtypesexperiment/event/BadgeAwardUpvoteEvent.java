@@ -4,6 +4,7 @@ import com.prosilion.enumtypesexperiment.Kind;
 import com.prosilion.enumtypesexperiment.NostrException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.stream.Stream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.lang.NonNull;
@@ -11,8 +12,21 @@ import org.springframework.lang.NonNull;
 public class BadgeAwardUpvoteEvent<T extends Type> extends AbstractBadgeAwardEvent<T> {
   private static final Log log = LogFactory.getLog(BadgeAwardUpvoteEvent.class);
 
-  public BadgeAwardUpvoteEvent(@NonNull Identity identity, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
-    super((T) Type.UPVOTE, identity, kind, tags, content);
+  public BadgeAwardUpvoteEvent(
+      @NonNull Identity identity,
+      @NonNull UpvoteTags upvoteTags,
+      @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+    super((T) Type.UPVOTE, identity, Kind.BADGE_AWARD_EVENT, upvoteTags.getUpvoteTags(), content);
+  }
+
+  public BadgeAwardUpvoteEvent(
+      @NonNull Identity identity,
+      @NonNull UpvoteTags upvoteTags,
+      @NonNull List<BaseTag> tags,
+      @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+    super((T) Type.UPVOTE, identity, Kind.BADGE_AWARD_EVENT,
+        Stream.concat(upvoteTags.getUpvoteTags().stream(), tags.stream()).toList()
+        , content);
   }
 
   @Override

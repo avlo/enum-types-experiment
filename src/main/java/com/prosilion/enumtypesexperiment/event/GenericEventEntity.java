@@ -1,12 +1,9 @@
 package com.prosilion.enumtypesexperiment.event;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.prosilion.enumtypesexperiment.Kind;
 import com.prosilion.enumtypesexperiment.NostrException;
 import com.prosilion.enumtypesexperiment.crypto.NostrUtil;
-import java.beans.Transient;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -90,9 +87,9 @@ public class GenericEventEntity implements GenericEventEntityIF {
     return genericEventDto.getSignature();
   }
 
-  @JsonIgnore
-  @EqualsAndHashCode.Exclude
-  private final byte[] _serializedEvent;
+//  @JsonIgnore
+//  @EqualsAndHashCode.Exclude
+//  private final byte[] _serializedEvent;
 
 //
 //  @JsonIgnore
@@ -112,27 +109,30 @@ public class GenericEventEntity implements GenericEventEntityIF {
   }
 
   public GenericEventEntity(@NonNull Identity identity, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
-    this._serializedEvent = this.serialize().getBytes(StandardCharsets.UTF_8);
 
-    this.genericEventDto = new GenericEventDto(
-            NostrUtil.bytesToHex(NostrUtil.sha256(_serializedEvent)),
-            identity.getPublicKey(),
-            kind,
-            tags,
-            Instant.now().getEpochSecond(),
-            content);
-    this.genericEventDto.setSignature(identity.sign(this));
+    final GenericEventDto genericEventDtoUnderConstruction = new GenericEventDto(
+        identity.getPublicKey(),
+        kind,
+        tags,
+        Instant.now().getEpochSecond(),
+        content);
+
+    Supplier<ByteBuffer> byteArraySupplier = genericEventDtoUnderConstruction.getByteArraySupplier();
+    Signature signature = identity.sign(genericEventDtoUnderConstruction);
+    String id = NostrUtil.bytesToHex(NostrUtil.sha256(byteArraySupplier.get().array()));
+
+    genericEventDtoUnderConstruction.setId(id);
+    genericEventDtoUnderConstruction.setSignature(signature);
+    this.genericEventDto = genericEventDtoUnderConstruction;
   }
 
   @Override
   public String toBech32() {
-    return this.genericEventDto.toBech32();
+    return genericEventDto.toBech32();
   }
 
-  @Transient
   @Override
-  public Supplier<ByteBuffer> getByeArraySupplier() {
-    log.info(String.format("Serialized event: %s", new String(_serializedEvent)));
-    return () -> ByteBuffer.wrap(_serializedEvent);
+  public Supplier<ByteBuffer> getByteArraySupplier() throws NostrException {
+    return genericEventDto.getByteArraySupplier();
   }
 }
