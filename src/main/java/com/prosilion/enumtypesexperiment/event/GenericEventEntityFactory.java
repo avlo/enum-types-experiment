@@ -20,32 +20,41 @@ import static com.prosilion.enumtypesexperiment.event.Encoder.ENCODER_MAPPED_AFT
 public class GenericEventEntityFactory {
   private static final Log log = LogFactory.getLog(GenericEventEntityFactory.class);
 
-  public static GenericEventRecord createInstance(@NonNull Identity identity, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+  public static GenericEventRecord createInstance(
+      @NonNull Identity identity,
+      @NonNull Kind kind,
+      @NonNull List<BaseTag> tags,
+      @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+
     long epochSecond = Instant.now().getEpochSecond();
     GenericEventRecordFlux flux = new GenericEventRecordFlux(
         identity.getPublicKey(),
         epochSecond,
         kind, tags, content);
 
-    Supplier<ByteBuffer> byteArraySupplier = flux.getByteArraySupplier();
-    Signature signature = identity.sign(flux);
-
-    return new GenericEventRecord(
-        NostrUtil.bytesToHex(NostrUtil.sha256(byteArraySupplier.get().array())),
+    GenericEventRecord genericEventRecord = new GenericEventRecord(
+        NostrUtil.bytesToHex(NostrUtil.sha256(flux.getByteArraySupplier().get().array())),
         identity.getPublicKey(),
         epochSecond,
         kind,
         tags,
         content,
-        signature);
+        identity.sign(flux));
+
+    log.info(String.format("\nGenericEvenRecord created:\n  %s\n", genericEventRecord));
+
+    return genericEventRecord;
   }
 
-  private record GenericEventRecordFlux(PublicKey pubkey, Long createdAt, Kind kind, List<BaseTag> tags,
-                                        String content) implements ISignableEntity {
+  private record GenericEventRecordFlux(
+      PublicKey pubkey,
+      Long createdAt,
+      Kind kind,
+      List<BaseTag> tags,
+      String content) implements ISignableEntity {
 
     public Supplier<ByteBuffer> getByteArraySupplier() throws NostrException {
       byte[] serializedEvent = serialize().getBytes(StandardCharsets.UTF_8);
-      log.info(String.format("Serialized event: %s", new String(serializedEvent)));
       return () -> ByteBuffer.wrap(serializedEvent);
     }
 
