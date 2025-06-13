@@ -1,16 +1,6 @@
 package com.prosilion.enumtypesexperiment.event;
 
 import com.prosilion.enumtypesexperiment.Kind;
-//public class TextNoteEvent extends GenericEventEntity {
-//  private static final Log log = LogFactory.getLog(TextNoteEvent.class);
-//
-//  public TextNoteEvent() {
-//    super(Kind.TEXT_NOTE, Type.REPUTATION);
-//  }
-//  
-//}
-
-import com.prosilion.enumtypesexperiment.Kind;
 import com.prosilion.enumtypesexperiment.NostrException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;

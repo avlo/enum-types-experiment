@@ -20,7 +20,7 @@ import static com.prosilion.enumtypesexperiment.event.Encoder.ENCODER_MAPPED_AFT
 public class GenericEventEntityFactory {
   private static final Log log = LogFactory.getLog(GenericEventEntityFactory.class);
 
-  public static GenericEventRecord GenericEventEntityFactory(@NonNull Identity identity, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+  public static GenericEventRecord createInstance(@NonNull Identity identity, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
     long epochSecond = Instant.now().getEpochSecond();
     GenericEventRecordFlux flux = new GenericEventRecordFlux(
         identity.getPublicKey(),
@@ -30,7 +30,7 @@ public class GenericEventEntityFactory {
     Supplier<ByteBuffer> byteArraySupplier = flux.getByteArraySupplier();
     Signature signature = identity.sign(flux);
 
-    GenericEventRecord genericEventRecord = new GenericEventRecord(
+    return new GenericEventRecord(
         NostrUtil.bytesToHex(NostrUtil.sha256(byteArraySupplier.get().array())),
         identity.getPublicKey(),
         epochSecond,
@@ -38,8 +38,6 @@ public class GenericEventEntityFactory {
         tags,
         content,
         signature);
-
-    return genericEventRecord;
   }
 
   private record GenericEventRecordFlux(PublicKey pubkey, Long createdAt, Kind kind, List<BaseTag> tags,
