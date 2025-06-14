@@ -8,16 +8,13 @@ import lombok.Getter;
 import org.springframework.lang.NonNull;
 
 @Getter
-public abstract class AbstractBadgeAwardEvent<T extends Type> implements AbstractBadgeAwardEventIF<T> {
-  private final Kind kind;
+public abstract class AbstractBadgeAwardEvent<T extends Type> extends BaseEvent implements AbstractBadgeAwardEventIF<T> {
   private final T type;
-  private final GenericEventRecord genericEventRecord;
 
   public AbstractBadgeAwardEvent(
       @NonNull T type,
-      @NonNull Identity identity, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
-    this.genericEventRecord = GenericEventEntityFactory.createInstance(identity, kind, tags, content);
-    this.kind = Kind.BADGE_AWARD_EVENT;
+      @NonNull Identity identity, @NonNull List<BaseTag> tags, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
+    super(identity, Kind.BADGE_AWARD_EVENT, tags, content);
     this.type = type;
   }
 }

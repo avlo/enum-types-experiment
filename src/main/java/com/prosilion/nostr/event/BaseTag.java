@@ -13,48 +13,43 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.apache.commons.lang3.stream.Streams;
 
-@Data
-@ToString
-@EqualsAndHashCode(callSuper = false)
+//TODO: revisit below serializers
 @JsonDeserialize(using = TagDeserializer.class)
 @JsonSerialize(using = BaseTagSerializer.class)
-public abstract class BaseTag implements ITag {
+public interface BaseTag extends ITag {
 
-    @Override
-    public String getCode() {
-        return this.getClass().getAnnotation(Tag.class).code();
-    }
+  default String getCode() {
+    return this.getClass().getAnnotation(Tag.class).code();
+  }
 
-    public Optional<String> getFieldValue(Field field) {
-        try {
-            return Optional.ofNullable(
-                    new PropertyDescriptor(field.getName(), this.getClass())
-                        .getReadMethod().invoke(this))
-                .map(Object::toString);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | IntrospectionException ex) {
-            return Optional.empty();
-        }
+  default Optional<String> getFieldValue(Field field) {
+    try {
+      return Optional.ofNullable(
+              new PropertyDescriptor(field.getName(), this.getClass())
+                  .getReadMethod().invoke(this))
+          .map(Object::toString);
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+             IntrospectionException ex) {
+      return Optional.empty();
     }
+  }
 
-    public List<Field> getSupportedFields() {
-        return Streams.failableStream(Arrays.stream(this.getClass().getDeclaredFields()))
-            .filter(f ->
-                Objects.nonNull(f.getAnnotation(Key.class)))
-            .filter(f ->
-                getFieldValue(f).isPresent())
-            .collect(Collectors.toList());
-    }
+  default List<Field> getSupportedFields() {
+    return Streams.failableStream(Arrays.stream(this.getClass().getDeclaredFields()))
+        .filter(f ->
+            Objects.nonNull(f.getAnnotation(Key.class)))
+        .filter(f ->
+            getFieldValue(f).isPresent())
+        .collect(Collectors.toList());
+  }
 
-    protected static <T extends BaseTag> void setOptionalField(JsonNode node, BiConsumer<JsonNode, T> con, T tag) {
-        Optional.ofNullable(node).ifPresent(n -> con.accept(n, tag));
-    }
+  static <T extends BaseTag> void setOptionalField(JsonNode node, BiConsumer<JsonNode, T> con, T tag) {
+    Optional.ofNullable(node).ifPresent(n -> con.accept(n, tag));
+  }
 
-    protected static <T extends BaseTag> void setRequiredField(JsonNode node, BiConsumer<JsonNode, T> con, T tag) {
-        con.accept(Optional.ofNullable(node).orElseThrow(), tag);
-    }
+  static <T extends BaseTag> void setRequiredField(JsonNode node, BiConsumer<JsonNode, T> con, T tag) {
+    con.accept(Optional.ofNullable(node).orElseThrow(), tag);
+  }
 }

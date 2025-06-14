@@ -2,27 +2,15 @@ package com.prosilion.nostr.event;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.stream.IntStream;
-import lombok.Data;
 import lombok.NonNull;
 
-@Data
-public class GenericTagDecoder<T extends GenericTag> implements IDecoder<T> {
-
-  private final Class<T> clazz;
-
-  public GenericTagDecoder() {
-    this((Class<T>) GenericTag.class);
-  }
-
-  public GenericTagDecoder(@NonNull Class<T> clazz) {
-    this.clazz = clazz;
-  }
+public class GenericTagDecoder implements IDecoder<GenericTag> {
 
   @Override
-  public T decode(@NonNull String json) {
+  public GenericTag decode(@NonNull String json) {
     try {
       String[] jsonElements = I_DECODER_MAPPER_AFTERBURNER.readValue(json, String[].class);
-      GenericTag genericTag = new GenericTag(
+      return new GenericTag(
           jsonElements[0],
           IntStream.of(1, jsonElements.length - 1)
               .mapToObj(i -> new ElementAttribute(
@@ -30,7 +18,6 @@ public class GenericTagDecoder<T extends GenericTag> implements IDecoder<T> {
                   jsonElements[i]))
               .distinct()
               .toList());
-      return (T) genericTag;
     } catch (JsonProcessingException ex) {
       throw new RuntimeException(ex);
     }

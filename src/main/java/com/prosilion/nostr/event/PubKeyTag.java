@@ -1,57 +1,39 @@
 package com.prosilion.nostr.event;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import java.util.Optional;
+import lombok.Getter;
 import lombok.NonNull;
+import org.springframework.lang.Nullable;
 
-@JsonPropertyOrder({"pubKey", "mainRelayUrl", "petName"})
-@Builder
-@Data
-@EqualsAndHashCode(callSuper = true)
 @Tag(code = "p")
-@NoArgsConstructor
-public class PubKeyTag extends BaseTag {
+@JsonPropertyOrder({"pubKey", "mainRelayUrl", "petName"})
+public record PubKeyTag(
+    @Getter @Key PublicKey publicKey,
+    @Getter @Nullable @Key @JsonInclude(JsonInclude.Include.NON_NULL) String mainRelayUrl,
+    @Getter @Nullable @Key @JsonInclude(JsonInclude.Include.NON_NULL) String petName) implements BaseTag {
 
-    @Key
-    @JsonProperty("publicKey")
-    private PublicKey publicKey;
+  public PubKeyTag(PublicKey publicKey) {
+    this(publicKey, null);
+  }
 
-    @Key
-    @JsonProperty("mainRelayUrl")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String mainRelayUrl;
+  public PubKeyTag(PublicKey publicKey, String mainRelayUrl) {
+    this(publicKey, mainRelayUrl, null);
+  }
 
-    @Key(nip = 2)
-    @JsonProperty("petName")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String petName;
+  public PubKeyTag(PublicKey publicKey, String mainRelayUrl, String petName) {
+    this.publicKey = publicKey;
+    this.mainRelayUrl = mainRelayUrl;
+    this.petName = petName;
+  }
 
-    public PubKeyTag(@NonNull PublicKey publicKey) {
-        this.publicKey = publicKey;
-    }
-
-    public PubKeyTag(@NonNull PublicKey publicKey, String mainRelayUrl) {
-        this.publicKey = publicKey;
-        this.mainRelayUrl = mainRelayUrl;
-    }
-
-    public PubKeyTag(@NonNull PublicKey publicKey, String mainRelayUrl, String petName) {
-        this.publicKey = publicKey;
-        this.mainRelayUrl = mainRelayUrl;
-        this.petName = petName;
-    }
-
-    public static <T extends BaseTag> T deserialize(@NonNull JsonNode node) {
-        PubKeyTag tag = new PubKeyTag();
-        setRequiredField(node.get(1), (n, t) -> tag.setPublicKey(new PublicKey(n.asText())), tag);
-        setOptionalField(node.get(2), (n, t) -> tag.setMainRelayUrl(n.asText()), tag);
-        setOptionalField(node.get(3), (n, t) -> tag.setPetName(n.asText()), tag);
-        return (T) tag;
-    }
+  public static BaseTag deserialize(@NonNull JsonNode node) {
+    return new PubKeyTag(
+        new PublicKey(
+            Optional.ofNullable(node.get(1)).orElseThrow().asText()),
+        Optional.ofNullable(node.get(2)).map(JsonNode::asText).orElse(null),
+        Optional.ofNullable(node.get(3)).map(JsonNode::asText).orElse(null));
+  }
 }

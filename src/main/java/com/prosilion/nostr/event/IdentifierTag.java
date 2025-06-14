@@ -1,31 +1,19 @@
 package com.prosilion.nostr.event;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.Optional;
+import lombok.Getter;
 import lombok.NonNull;
 
-@Builder
-@Data
 @Tag(code = "d", nip = 1)
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonSerialize(using = IdentifierTagSerializer.class)
-public class IdentifierTag extends BaseTag {
+public record IdentifierTag(@Getter @Key String uuid) implements BaseTag {
 
-    @Key
-    @JsonProperty
-    private String uuid;
-
-    public static <T extends BaseTag> T deserialize(@NonNull JsonNode node) {
-        IdentifierTag tag = new IdentifierTag();
-        setRequiredField(node.get(1), (n, t) -> tag.setUuid(n.asText()), tag);
-        return (T) tag;
+    public static BaseTag deserialize(@NonNull JsonNode node) {
+        return new IdentifierTag(
+            Optional.of(node.get(1)).orElseThrow().asText());
     }
 
     @Override

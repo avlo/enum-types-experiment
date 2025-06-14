@@ -1,73 +1,50 @@
 package com.prosilion.nostr.event;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.prosilion.nostr.Kind;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.NonNull;
+import org.springframework.lang.Nullable;
 
-@Builder
-@Data
 @Tag(code = "a", nip = 33)
 @JsonPropertyOrder({"kind", "publicKey", "identifierTag", "relay"})
-@NoArgsConstructor
-@JsonSerialize(using = AddressTagSerializer.class)
-public class AddressTag extends BaseTag {
+//@JsonSerialize(using = AddressTagSerializer.class)
+public record AddressTag(
+    @Getter @Key Kind kind,
+    @Getter @Key PublicKey publicKey,
+    @Getter @Nullable @Key @JsonInclude(JsonInclude.Include.NON_NULL) IdentifierTag identifierTag,
+    @Getter @Nullable @Key @JsonInclude(JsonInclude.Include.NON_NULL) Relay relay) implements BaseTag {
 
-  @Key
-  @JsonProperty
-  private Kind kind;
+  public AddressTag(Kind kind, PublicKey publicKey) {
+    this(kind, publicKey, null);
+  }
 
-  @Key
-  @JsonProperty
-  private PublicKey publicKey;
+  public AddressTag(Kind kind, PublicKey publicKey, IdentifierTag identifierTag) {
+    this(kind, publicKey, identifierTag, null);
+  }
 
-  @Key
-  @JsonProperty
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private IdentifierTag identifierTag;
-
-  @Key
-  @JsonProperty
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private Relay relay;
-
-  public AddressTag(@NonNull Kind kind, @NonNull PublicKey publicKey) {
+  public AddressTag(Kind kind, PublicKey publicKey, IdentifierTag identifierTag, Relay relay) {
     this.kind = kind;
     this.publicKey = publicKey;
-  }
-
-  public AddressTag(@NonNull Kind kind, @NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag) {
-    this(kind, publicKey);
     this.identifierTag = identifierTag;
-  }
-
-  public AddressTag(@NonNull Kind kind, @NonNull PublicKey publicKey, @NonNull IdentifierTag identifierTag, @NonNull Relay relay) {
-    this(kind, publicKey, identifierTag);
     this.relay = relay;
   }
 
-  public static <T extends BaseTag> T deserialize(@NonNull JsonNode node) {
+  public static BaseTag deserialize(@NonNull JsonNode node) {
     List<String> list = Arrays.stream(node.get(1).asText().split(":")).toList();
 
-    final AddressTag addressTag = new AddressTag();
-
-    addressTag.setKind(Kind.valueOf(Optional.ofNullable(list.get(0)).orElseThrow()));
-    addressTag.setPublicKey(new PublicKey(Optional.ofNullable(list.get(1)).orElseThrow()));
-
-    Optional.ofNullable(list.get(2)).ifPresent(identifier -> addressTag.setIdentifierTag(new IdentifierTag(identifier)));
-    Optional.ofNullable(node.get(2)).ifPresent(relay -> addressTag.setRelay(new Relay(relay.asText())));
-
-    return (T) addressTag;
+    return new AddressTag(
+        Kind.valueOf(Optional.ofNullable(list.get(0)).orElseThrow()),
+        new PublicKey(Optional.ofNullable(list.get(1)).orElseThrow()),
+        Optional.ofNullable(list.get(2)).map(IdentifierTag::new).orElse(null),
+        Optional.ofNullable(node.get(2)).map(n -> new Relay(n.asText())).orElse(null)
+    );
   }
 
   @Override

@@ -14,19 +14,19 @@ public abstract class BaseEvent implements BaseEventIF {
   private final GenericEventRecord genericEventRecord;
 
   public BaseEvent(@NonNull Identity identity, @NonNull Kind kind) throws NostrException, NoSuchAlgorithmException {
-    this.genericEventRecord = GenericEventEntityFactory.createInstance(identity, kind, List.of(), "");
+    this(identity, kind, List.of());
   }
 
   public BaseEvent(@NonNull Identity identity, @NonNull Kind kind, @NonNull String content) throws NostrException, NoSuchAlgorithmException {
-    this.genericEventRecord = GenericEventEntityFactory.createInstance(identity, kind, List.of(), content);
+    this(identity, kind, List.of(), content);
   }
 
   public BaseEvent(@NonNull Identity identity, @NonNull Kind kind, @NonNull List<BaseTag> tags) throws NostrException, NoSuchAlgorithmException {
-    this.genericEventRecord = GenericEventEntityFactory.createInstance(identity, kind, List.of(), "");
+    this(identity, kind, tags, "");
   }
 
   public BaseEvent(@NonNull Identity identity, @NonNull Kind kind, List<BaseTag> tags, String content) throws NostrException, NoSuchAlgorithmException {
-    this.genericEventRecord = GenericEventEntityFactory.createInstance(identity, kind, List.of(), content);
+    this.genericEventRecord = GenericEventEntityFactory.createInstance(identity, kind, tags, content);
   }
 
   @Override

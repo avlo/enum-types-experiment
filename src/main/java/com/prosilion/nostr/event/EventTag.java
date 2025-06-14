@@ -1,68 +1,39 @@
 package com.prosilion.nostr.event;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import com.prosilion.nostr.crypto.HexStringValidator;
+import java.util.Optional;
+import lombok.Getter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
-@Builder
-@Data
-@EqualsAndHashCode(callSuper = true)
 @Tag(code = "e", name = "event")
 @JsonPropertyOrder({"idEvent", "recommendedRelayUrl", "marker"})
-@NoArgsConstructor
-@AllArgsConstructor
-public class EventTag extends BaseTag {
+public record EventTag(
+    @Getter @Key String idEvent,
+    @Getter @Key @Nullable @JsonInclude(JsonInclude.Include.NON_NULL) String recommendedUrl,
+    @Getter @Key @Nullable @JsonInclude(JsonInclude.Include.NON_NULL) Marker marker) implements BaseTag {
 
-    @Key
-    @JsonProperty
-    private String idEvent;
+  public EventTag(String idEvent) {
+    this(idEvent, null);
+  }
 
-    @Key
-    @JsonProperty
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String recommendedRelayUrl;
+  public EventTag(String idEvent, String recommendedUrl) {
+    this(idEvent, recommendedUrl, null);
+  }
 
-    @Key(nip = 10)
-    @JsonProperty
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Marker marker;
+  public EventTag(String idEvent, String recommendedUrl, Marker marker) {
+    this.idEvent = HexStringValidator.validateHex(idEvent, 64);
+    this.recommendedUrl = recommendedUrl;
+    this.marker = marker;
+  }
 
-    public EventTag(String idEvent) {
-        this.recommendedRelayUrl = null;
-        this.idEvent = idEvent;
-
-        // TODO: This is a bug. The marker should not be set, or at least not like this.
-        //this.marker = this.idEvent == null ? Marker.ROOT : Marker.REPLY;
-    }
-
-    public static <T extends BaseTag> T deserialize(@NonNull JsonNode node) {
-        EventTag tag = new EventTag();
-        setRequiredField(node.get(1), (n, t) -> tag.setIdEvent(n.asText()), tag);
-        setOptionalField(node.get(2), (n, t) -> tag.setRecommendedRelayUrl(n.asText()), tag);
-        setOptionalField(node.get(3), (n, t) -> tag.setMarker(Marker.valueOf(n.asText().toUpperCase())), tag);
-        return (T) tag;
-    }
-
-    public static EventTag updateFields(@NonNull GenericTag tag) {
-        if (!"e".equals(tag.getCode())) {
-            throw new IllegalArgumentException("Invalid tag code for EventTag");
-        }
-        EventTag eventTag = new EventTag(tag.getAttributes().get(0).getValue().toString());
-        if (tag.getAttributes().size() > 1) {
-            eventTag.setRecommendedRelayUrl(tag.getAttributes().get(1).getValue().toString());
-        }
-        if (tag.getAttributes().size() > 2) {
-            eventTag.setMarker(Marker.valueOf(tag.getAttributes().get(2).getValue().toString()));
-        }
-
-        return eventTag;
-    }
-
+  public static BaseTag deserialize(@NonNull JsonNode node) {
+    return new EventTag(
+        Optional.of(node.get(1)).orElseThrow().asText(),
+        Optional.ofNullable(node.get(2)).map(JsonNode::asText).orElse(null),
+        Optional.ofNullable(node.get(3)).map(n -> Marker.valueOf(n.asText().toUpperCase())).orElse(null));
+  }
 }

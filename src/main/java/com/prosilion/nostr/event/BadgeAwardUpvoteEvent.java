@@ -1,6 +1,5 @@
 package com.prosilion.nostr.event;
 
-import com.prosilion.nostr.Kind;
 import com.prosilion.nostr.NostrException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -16,7 +15,7 @@ public class BadgeAwardUpvoteEvent<T extends Type> extends AbstractBadgeAwardEve
       @NonNull Identity identity,
       @NonNull Identity upvotedUser,
       @NonNull String content) throws NostrException, NoSuchAlgorithmException {
-    super((T) Type.UPVOTE, identity, Kind.BADGE_AWARD_EVENT,
+    super((T) Type.UPVOTE, identity,
         new Vote(
             identity.getPublicKey(),
             upvotedUser.getPublicKey(),
@@ -29,7 +28,7 @@ public class BadgeAwardUpvoteEvent<T extends Type> extends AbstractBadgeAwardEve
       @NonNull Identity upvotedUser,
       @NonNull List<BaseTag> tags,
       @NonNull String content) throws NostrException, NoSuchAlgorithmException {
-    super((T) Type.UPVOTE, identity, Kind.BADGE_AWARD_EVENT,
+    super((T) Type.UPVOTE, identity,
         Stream.concat(new Vote(
             identity.getPublicKey(),
             upvotedUser.getPublicKey(),
