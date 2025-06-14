@@ -3,6 +3,7 @@ package com.prosilion.nostr.event;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.prosilion.nostr.Kind;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +15,7 @@ import org.springframework.lang.Nullable;
 
 @Tag(code = "a", nip = 33)
 @JsonPropertyOrder({"kind", "publicKey", "identifierTag", "relay"})
-//@JsonSerialize(using = AddressTagSerializer.class)
+@JsonSerialize(using = AddressTagSerializer.class)
 public record AddressTag(
     @Getter @Key Kind kind,
     @Getter @Key PublicKey publicKey,
