@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.Getter;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 @Tag(code = "a", nip = 33)

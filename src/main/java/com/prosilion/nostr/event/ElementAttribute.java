@@ -1,18 +1,11 @@
 package com.prosilion.nostr.event;
 
 import java.util.Objects;
+import lombok.Getter;
 
 public record ElementAttribute(
-    String name,
-    Object value) {
-
-  public String getName() {
-    return name;
-  }
-
-  public Object getValue() {
-    return value;
-  }
+    @Getter String name,
+    @Getter Object value) {
 
   @Override
   public boolean equals(Object o) {

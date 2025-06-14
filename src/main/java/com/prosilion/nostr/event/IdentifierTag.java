@@ -11,21 +11,21 @@ import lombok.NonNull;
 @JsonSerialize(using = IdentifierTagSerializer.class)
 public record IdentifierTag(@Getter @Key String uuid) implements BaseTag {
 
-    public static BaseTag deserialize(@NonNull JsonNode node) {
-        return new IdentifierTag(
-            Optional.of(node.get(1)).orElseThrow().asText());
-    }
+  public static BaseTag deserialize(@NonNull JsonNode node) {
+    return new IdentifierTag(
+        Optional.of(node.get(1)).orElseThrow().asText());
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass())
-            return false;
-        IdentifierTag that = (IdentifierTag) o;
-        return Objects.equals(uuid, that.uuid);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass())
+      return false;
+    IdentifierTag that = (IdentifierTag) o;
+    return Objects.equals(uuid, that.uuid);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(uuid);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(uuid);
+  }
 }
