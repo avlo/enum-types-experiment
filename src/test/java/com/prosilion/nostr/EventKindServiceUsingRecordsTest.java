@@ -4,7 +4,7 @@ import com.prosilion.nostr.event.AbstractBadgeAwardEventRxR;
 import com.prosilion.nostr.event.BadgeAwardDownvoteEventRxR;
 import com.prosilion.nostr.event.BadgeAwardUpvoteEventRxR;
 import com.prosilion.nostr.event.Identity;
-import com.prosilion.nostr.event.TextNoteEventRxR;
+import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.event.Type;
 import com.prosilion.nostr.service.EventKindServiceRxRIF;
 import com.prosilion.nostr.service.EventKindTypeServiceRxRIF;
@@ -22,12 +22,12 @@ class EventKindServiceUsingRecordsTest {
   private static final Log log = LogFactory.getLog(EventKindServiceUsingRecordsTest.class);
 
   private final EventKindTypeServiceRxRIF<Type, AbstractBadgeAwardEventRxR<Type>> eventKindTypeService;
-  private final EventKindServiceRxRIF<TextNoteEventRxR> eventKindService;
+  private final EventKindServiceRxRIF<TextNoteEvent> eventKindService;
 
   @Autowired
   public EventKindServiceUsingRecordsTest(
       EventKindTypeServiceRxRIF<Type, AbstractBadgeAwardEventRxR<Type>> eventKindTypeService,
-      EventKindServiceRxRIF<TextNoteEventRxR> eventKindService) {
+      EventKindServiceRxRIF<TextNoteEvent> eventKindService) {
     this.eventKindTypeService = eventKindTypeService;
     this.eventKindService = eventKindService;
   }
@@ -54,7 +54,7 @@ class EventKindServiceUsingRecordsTest {
   void testTextNoteEvent() throws NostrException, NoSuchAlgorithmException {
     Identity identity = Identity.generateRandomIdentity();
 
-    TextNoteEventRxR textNoteEvent = new TextNoteEventRxR(identity, "TEXT note event text content");
+    TextNoteEvent textNoteEvent = new TextNoteEvent(identity, "TEXT note event text content");
     eventKindService.processIncomingEvent(textNoteEvent);
   }
 
@@ -71,7 +71,7 @@ class EventKindServiceUsingRecordsTest {
     BadgeAwardDownvoteEventRxR<Type> typeBadgeAwardDownvoteEvent = new BadgeAwardDownvoteEventRxR<>(identity, downvotedUser, "DOWN vote event text content");
     eventKindTypeService.processIncomingEvent(typeBadgeAwardDownvoteEvent);
 
-    TextNoteEventRxR textNoteEvent = new TextNoteEventRxR(identity, "TEXT note event text content");
+    TextNoteEvent textNoteEvent = new TextNoteEvent(identity, "TEXT note event text content");
     eventKindService.processIncomingEvent(textNoteEvent);
   }
 }

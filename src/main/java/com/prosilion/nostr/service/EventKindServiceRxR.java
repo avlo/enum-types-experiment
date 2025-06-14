@@ -1,7 +1,7 @@
 package com.prosilion.nostr.service;
 
 import com.prosilion.nostr.Kind;
-import com.prosilion.nostr.event.TextNoteEventRxR;
+import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.service.plugin.EventKindPluginRxRIF;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindServiceRxR<T extends TextNoteEventRxR> implements EventKindServiceRxRIF<T> {
+public class EventKindServiceRxR<T extends TextNoteEvent> implements EventKindServiceRxRIF<T> {
   private final Map<Kind, EventKindPluginRxRIF<T>> eventTypePluginsMap;
 
 

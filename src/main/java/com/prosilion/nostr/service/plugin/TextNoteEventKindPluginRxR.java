@@ -1,14 +1,14 @@
 package com.prosilion.nostr.service.plugin;
 
 import com.prosilion.nostr.Kind;
-import com.prosilion.nostr.event.TextNoteEventRxR;
+import com.prosilion.nostr.event.TextNoteEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TextNoteEventKindPluginRxR<T extends TextNoteEventRxR> implements EventKindPluginRxRIF<T> {
+public class TextNoteEventKindPluginRxR<T extends TextNoteEvent> implements EventKindPluginRxRIF<T> {
   private static final Log log = LogFactory.getLog(TextNoteEventKindPluginRxR.class);
 
   @Override

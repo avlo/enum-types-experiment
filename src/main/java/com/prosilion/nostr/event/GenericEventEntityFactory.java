@@ -17,10 +17,10 @@ import org.apache.commons.logging.LogFactory;
 
 import static com.prosilion.nostr.event.Encoder.ENCODER_MAPPED_AFTERBURNER;
 
-public class GenericEventEntityFactory {
+class GenericEventEntityFactory {
   private static final Log log = LogFactory.getLog(GenericEventEntityFactory.class);
 
-  public static GenericEventRecord createInstance(
+  protected static GenericEventRecord createInstance(
       @NonNull Identity identity,
       @NonNull Kind kind,
       @NonNull List<BaseTag> tags,
