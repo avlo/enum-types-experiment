@@ -28,6 +28,7 @@ dependencies {
     def jacksonModuleAfterburner = rootProject.property("nostr-java.jacksonModuleAfterburner")
     def bouncyCastle = rootProject.property("nostr-java.bouncyCastle")
     def lombok = rootProject.property("nostr-java.lombok")
+    def googleGuava = rootProject.property("nostr-java.googleGuava")
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     
@@ -42,6 +43,7 @@ dependencies {
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.projectlombok:lombok:' + lombok
+    testImplementation 'com.google.guava:guava:' + googleGuava
     
     testAnnotationProcessor 'org.projectlombok:lombok:' + lombok
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
