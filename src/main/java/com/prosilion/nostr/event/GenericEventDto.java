@@ -35,7 +35,7 @@ public class GenericEventDto implements GenericEventDtoIF {
   @JsonProperty("pubkey")
   @EqualsAndHashCode.Include
   @JsonDeserialize(using = PublicKeyDeserializer.class)
-  private PublicKey pubKey;
+  private PublicKey publicKey;
 
   @Key
   @JsonProperty("created_at")
@@ -61,10 +61,10 @@ public class GenericEventDto implements GenericEventDtoIF {
   @JsonDeserialize(using = SignatureDeserializer.class)
   private Signature signature;
 
-//  public GenericEventDto(@NonNull String id) {
-//    this.tags = new ArrayList<>();
-//    setId(id);
-//  }
+  public GenericEventDto(@NonNull String id) {
+    this.tags = new ArrayList<>();
+    setId(id);
+  }
 
   public GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull Long createdAt, @NonNull Signature signature) {
     this(id, pubKey, kind, new ArrayList<>(), createdAt, "", signature);
@@ -76,7 +76,7 @@ public class GenericEventDto implements GenericEventDtoIF {
 
   public GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull Long createdAt, @NonNull String content, @NonNull Signature signature) {
     this.id = validateId(id);
-    this.pubKey = pubKey;
+    this.publicKey = pubKey;
     this.kind = kind.getValue();
     this.tags = tags;
     this.createdAt = createdAt;
@@ -88,7 +88,7 @@ public class GenericEventDto implements GenericEventDtoIF {
    * should only be used by GenericEventEntity
    */
   protected GenericEventDto(@NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull Long createdAt, @NonNull String content) {
-    this.pubKey = pubKey;
+    this.publicKey = pubKey;
     this.kind = kind.getValue();
     this.tags = tags;
     this.createdAt = createdAt;

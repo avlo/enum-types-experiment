@@ -61,7 +61,7 @@ public abstract class BaseEvent implements BaseEventIF {
 
   @Override
   public List<BaseTag> getTags() {
-    return genericEventRecord.baseTags();
+    return genericEventRecord.tags();
   }
 
   protected static Kind validateKind(@NonNull Kind kind, @NonNull IntPredicate intPredicate, @NonNull Function<Kind, String> errorMessage) {

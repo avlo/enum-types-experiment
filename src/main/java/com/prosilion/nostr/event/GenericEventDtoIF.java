@@ -16,7 +16,7 @@ public interface GenericEventDtoIF extends IEvent, ISignableEntity
 
     try {
       arrayNode.add(0);
-      arrayNode.add(getPubKey().toString());
+      arrayNode.add(getPublicKey().toString());
       arrayNode.add(getCreatedAt());
       arrayNode.add(getKind().getValue());
       arrayNode.add(ENCODER_MAPPED_AFTERBURNER.valueToTree(getTags()));
@@ -33,7 +33,7 @@ public interface GenericEventDtoIF extends IEvent, ISignableEntity
   
   String getId();
 
-  PublicKey getPubKey();
+  PublicKey getPublicKey();
 
   Long getCreatedAt();
 

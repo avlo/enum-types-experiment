@@ -26,7 +26,7 @@ abstract class AbstractTagSerializer<T extends BaseTag> extends StdSerializer<T>
 
       ArrayNode arrayNode = node.objectNode().putArray("values").add(value.getCode());
 //      TODO: check deprecated
-      node.fields().forEachRemaining(entry -> arrayNode.add(entry.getValue().asText()));
+      node.properties().iterator().forEachRemaining(entry -> arrayNode.add(entry.getValue().asText()));
       gen.writePOJO(arrayNode);
     } catch (IOException e) {
       throw new RuntimeException(e);

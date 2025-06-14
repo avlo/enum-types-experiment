@@ -27,7 +27,7 @@ public record GenericEventRecord(
 
     @Getter
     @JsonProperty("tags")
-    List<BaseTag> baseTags,
+    List<BaseTag> tags,
 
     @Getter
     String content,
