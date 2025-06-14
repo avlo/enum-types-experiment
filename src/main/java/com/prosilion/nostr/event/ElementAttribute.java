@@ -1,28 +1,28 @@
 package com.prosilion.nostr.event;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.ToString;
+import java.util.Objects;
 
-@Builder
-@Data
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
-public class ElementAttribute {
+public record ElementAttribute(
+    String name,
+    Object value) {
 
-    @JsonProperty    
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @EqualsAndHashCode.Exclude
-    @NonNull
-    private final String name;
-    
-    @JsonProperty
-    @EqualsAndHashCode.Include
-    private final Object value;
+  public String getName() {
+    return name;
+  }
+
+  public Object getValue() {
+    return value;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    ElementAttribute that = (ElementAttribute) o;
+    return Objects.equals(value, that.value);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(value);
+  }
 }
