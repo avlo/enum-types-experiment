@@ -8,7 +8,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TextNoteEventKindPlugin<T extends TextNoteEvent> implements EventKindPluginRxRIF<T> {
+public class TextNoteEventKindPlugin<T extends TextNoteEvent> implements EventKindPluginIF<T> {
   private static final Log log = LogFactory.getLog(TextNoteEventKindPlugin.class);
 
   @Override

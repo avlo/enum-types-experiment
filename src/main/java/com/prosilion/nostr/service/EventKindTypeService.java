@@ -1,7 +1,7 @@
 package com.prosilion.nostr.service;
 
 import com.prosilion.nostr.Kind;
-import com.prosilion.nostr.event.AbstractBadgeAwardEvent;
+import com.prosilion.nostr.event.AbstractBadgeAwardEventIF;
 import com.prosilion.nostr.event.Type;
 import com.prosilion.nostr.service.plugin.AbstractEventTypePluginIF;
 import com.prosilion.nostr.service.plugin.EventTypePluginIF;
@@ -15,7 +15,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindTypeService<V extends Type, T extends AbstractBadgeAwardEvent<V>> implements EventKindTypeServiceIF<V, T> {
+public class EventKindTypeService<V extends Type, T extends AbstractBadgeAwardEventIF<V>> implements EventKindTypeServiceIF<V, T> {
   private final Map<Kind, Map<V, AbstractEventTypePluginIF<Kind, V, T>>> abstractEventTypePluginsMapMap;
 
   @Autowired

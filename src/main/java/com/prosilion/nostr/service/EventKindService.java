@@ -1,7 +1,7 @@
 package com.prosilion.nostr.service;
 
 import com.prosilion.nostr.Kind;
-import com.prosilion.nostr.event.GenericEventEntity;
+import com.prosilion.nostr.event.TextNoteEvent;
 import com.prosilion.nostr.service.plugin.EventKindPluginIF;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,7 @@ import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventKindService<T extends GenericEventEntity> implements EventKindServiceIF<T> {
+public class EventKindService<T extends TextNoteEvent> implements EventKindServiceIF<T> {
   private final Map<Kind, EventKindPluginIF<T>> eventTypePluginsMap;
 
 
