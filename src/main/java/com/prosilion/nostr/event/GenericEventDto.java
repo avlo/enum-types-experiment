@@ -1,6 +1,8 @@
 package com.prosilion.nostr.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.prosilion.nostr.Kind;
 import com.prosilion.nostr.NostrException;
@@ -16,83 +18,43 @@ import java.util.List;
 import java.util.function.Supplier;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
-@Getter
-@EqualsAndHashCode(callSuper = false)
-@NoArgsConstructor
-public class GenericEventDto implements GenericEventDtoIF {
+@JsonTypeName("EVENT")
+@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_ARRAY, use = JsonTypeInfo.Id.NAME)
+public record GenericEventDto(
+    @Getter @EqualsAndHashCode.Include String id,
+    @Getter @Nullable @JsonProperty("pubkey") @EqualsAndHashCode.Include PublicKey publicKey,
+    @Getter @Nullable @EqualsAndHashCode.Exclude Kind kind,
+    @Getter @Nullable @EqualsAndHashCode.Exclude List<BaseTag> tags,
+    @Getter @Nullable @JsonProperty("created_at") @EqualsAndHashCode.Exclude Long createdAt,
+    @Getter @Nullable @EqualsAndHashCode.Exclude String content,
+    @Getter @Nullable @JsonProperty("sig") @EqualsAndHashCode.Exclude Signature signature) implements GenericEventDtoIF {
   private static final Log log = LogFactory.getLog(GenericEventDto.class);
 
-  @Key
-  @EqualsAndHashCode.Include
-  private String id;
-
-  @Key
-  @JsonProperty("pubkey")
-  @EqualsAndHashCode.Include
-  @JsonDeserialize(using = PublicKeyDeserializer.class)
-  private PublicKey publicKey;
-
-  @Key
-  @JsonProperty("created_at")
-  @EqualsAndHashCode.Exclude
-  private Long createdAt;
-
-  @Key
-  @EqualsAndHashCode.Exclude
-  private Integer kind;
-
-  @Key
-  @EqualsAndHashCode.Exclude
-  @JsonProperty("tags")
-  private List<BaseTag> tags;
-
-  @Key
-  @EqualsAndHashCode.Exclude
-  private String content;
-
-  @Key
-  @JsonProperty("sig")
-  @EqualsAndHashCode.Exclude
-  @JsonDeserialize(using = SignatureDeserializer.class)
-  private Signature signature;
-
-  public GenericEventDto(@NonNull String id) {
-    this.tags = new ArrayList<>();
-    setId(id);
+  public GenericEventDto(String id) {
+    this(id, null, null, new ArrayList<>(), null, null, null);
   }
 
-  public GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull Long createdAt, @NonNull Signature signature) {
-    this(id, pubKey, kind, new ArrayList<>(), createdAt, "", signature);
+  public GenericEventDto(String id, PublicKey publicKey, Kind kind, Long createdAt, Signature signature) {
+    this(id, publicKey, kind, new ArrayList<>(), createdAt, "", signature);
   }
 
-  public GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull Long createdAt, @NonNull List<BaseTag> tags, @NonNull Signature signature) throws NostrException, NoSuchAlgorithmException {
-    this(id, pubKey, kind, tags, createdAt, "", signature);
+  public GenericEventDto(String id, PublicKey publicKey, Kind kind, List<BaseTag> tags, Long createdAt, Signature signature) throws NostrException, NoSuchAlgorithmException {
+    this(id, publicKey, kind, tags, createdAt, "", signature);
   }
 
-  public GenericEventDto(@NonNull String id, @NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull Long createdAt, @NonNull String content, @NonNull Signature signature) {
+  public GenericEventDto(String id, PublicKey publicKey, Kind kind, List<BaseTag> tags, Long createdAt, String content, Signature signature) {
     this.id = validateId(id);
-    this.publicKey = pubKey;
-    this.kind = kind.getValue();
+    this.publicKey = publicKey;
+    this.kind = kind;
     this.tags = tags;
     this.createdAt = createdAt;
     this.content = content;
     this.signature = signature;
-  }
-
-  /**
-   * should only be used by GenericEventEntity
-   */
-  protected GenericEventDto(@NonNull PublicKey pubKey, @NonNull Kind kind, @NonNull List<BaseTag> tags, @NonNull Long createdAt, @NonNull String content) {
-    this.publicKey = pubKey;
-    this.kind = kind.getValue();
-    this.tags = tags;
-    this.createdAt = createdAt;
-    this.content = content;
   }
 
   private String validateId(@NonNull String id) {
@@ -109,27 +71,10 @@ public class GenericEventDto implements GenericEventDtoIF {
     }
   }
 
-  public void setId(@NonNull String id) {
-    this.id = validateId(id);
-  }
-
-  @Override
-  public Kind getKind() {
-    return Kind.valueOf(kind);
-  }
-
-  public void setKind(Kind kind) {
-    this.kind = kind.getValue();
-  }
-
-  public void setSignature(@NonNull Signature signature) {
-    this.signature = signature;
-  }
-
 //  @JsonIgnore
 //  @EqualsAndHashCode.Exclude
 //  private byte[] _serializedEvent;
-  
+
   @Transient
   @Override
   public Supplier<ByteBuffer> getByteArraySupplier() throws NostrException {

@@ -9,24 +9,11 @@ import org.springframework.lang.NonNull;
 import static com.prosilion.nostr.event.Encoder.ENCODER_MAPPED_AFTERBURNER;
 import static com.prosilion.nostr.event.IDecoder.I_DECODER_MAPPER_AFTERBURNER;
 
-@Getter
-public class OkMessage extends BaseMessage {
-
-  @JsonProperty
-  private final String eventId;
-
-  @JsonProperty
-  private final Boolean flag;
-
-  @JsonProperty
-  private final String message;
-
-  public OkMessage(String eventId, Boolean flag, String message) {
-    super(Command.OK);
-    this.eventId = eventId;
-    this.flag = flag;
-    this.message = message;
-  }
+public record OkMessage(
+    @Getter @JsonProperty String eventId,
+    @Getter @JsonProperty Boolean flag,
+    @Getter @JsonProperty String message) implements BaseMessage {
+  public static Command command = Command.OK;
 
   @Override
   public String encode() throws JsonProcessingException {
@@ -45,5 +32,10 @@ public class OkMessage extends BaseMessage {
     } catch (JsonProcessingException e) {
       throw new AssertionError(e);
     }
+  }
+
+  @Override
+  public Command getCommand() {
+    return command;
   }
 }

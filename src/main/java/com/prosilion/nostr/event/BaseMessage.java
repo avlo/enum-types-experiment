@@ -1,15 +1,16 @@
 package com.prosilion.nostr.event;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.Getter;
+import java.time.temporal.ValueRange;
 
-@Getter
-public abstract class BaseMessage {
-    private final Command command;
+public interface BaseMessage {
+  Command getCommand();
+  String encode() throws JsonProcessingException;
 
-    protected BaseMessage(Command command) {
-        this.command = command;
+  static String validateSubscriptionId(String subscriptionId) {
+    if (!ValueRange.of(1, 64).isValidIntValue(subscriptionId.length())) {
+      throw new IllegalArgumentException(String.format("SubscriptionId length must be between 1 and 64 characters but was [%d]", subscriptionId.length()));
     }
-
-    public abstract String encode() throws JsonProcessingException;
+    return subscriptionId;
+  }
 }

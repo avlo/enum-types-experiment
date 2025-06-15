@@ -8,16 +8,9 @@ import org.springframework.lang.NonNull;
 
 import static com.prosilion.nostr.event.Encoder.ENCODER_MAPPED_AFTERBURNER;
 
-@Getter
-public class NoticeMessage extends BaseMessage {
-
-  @JsonProperty
-  private final String message;
-
-  public NoticeMessage(@NonNull String message) {
-    super(Command.NOTICE);
-    this.message = message;
-  }
+public record NoticeMessage(
+    @Getter @JsonProperty String message) implements BaseMessage {
+  public static Command command = Command.NOTICE;
 
   @Override
   public String encode() throws JsonProcessingException {
@@ -29,5 +22,10 @@ public class NoticeMessage extends BaseMessage {
 
   public static <T extends BaseMessage> T decode(@NonNull Object arg) {
     return (T) new NoticeMessage(arg.toString());
+  }
+
+  @Override
+  public Command getCommand() {
+    return command;
   }
 }

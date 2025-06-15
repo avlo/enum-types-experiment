@@ -2,13 +2,14 @@ package com.prosilion.nostr.event;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Map;
-import lombok.NonNull;
+import org.springframework.lang.NonNull;
 
-public class BaseMessageDecoder<T extends BaseMessage> implements IDecoder<T> {
+import static com.prosilion.nostr.event.IDecoder.I_DECODER_MAPPER_AFTERBURNER;
+
+public class BaseMessageDecoder<T extends BaseMessage> {
   public static final int COMMAND_INDEX = 0;
   public static final int ARG_INDEX = 1;
 
-  @Override
   public T decode(@NonNull String jsonString) throws JsonProcessingException {
     ValidNostrJsonStructure validNostrJsonStructure = validateProperlyFormedJson(jsonString);
     Object subscriptionId = validNostrJsonStructure.getSubscriptionId();

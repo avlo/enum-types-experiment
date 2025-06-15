@@ -8,19 +8,12 @@ import org.springframework.lang.NonNull;
 
 import static com.prosilion.nostr.event.Encoder.ENCODER_MAPPED_AFTERBURNER;
 
-@Getter
-public class CloseMessage extends BaseMessage {
-
-  @JsonProperty
-  private final String subscriptionId;
-
-  private CloseMessage() {
-    this(null);
-  }
+public record CloseMessage(
+    @Getter @JsonProperty String subscriptionId) implements BaseMessage {
+  public static Command command = Command.CLOSE;
 
   public CloseMessage(String subscriptionId) {
-    super(Command.CLOSE);
-    this.subscriptionId = subscriptionId;
+    this.subscriptionId = BaseMessage.validateSubscriptionId(subscriptionId);
   }
 
   @Override
@@ -33,5 +26,10 @@ public class CloseMessage extends BaseMessage {
 
   public static <T extends BaseMessage> T decode(@NonNull Object arg) {
     return (T) new CloseMessage(arg.toString());
+  }
+
+  @Override
+  public Command getCommand() {
+    return command;
   }
 }

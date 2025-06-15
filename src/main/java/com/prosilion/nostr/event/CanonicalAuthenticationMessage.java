@@ -17,18 +17,13 @@ import org.springframework.lang.NonNull;
 import static com.prosilion.nostr.event.Encoder.ENCODER_MAPPED_AFTERBURNER;
 import static com.prosilion.nostr.event.IDecoder.I_DECODER_MAPPER_AFTERBURNER;
 
-@Getter
-public class CanonicalAuthenticationMessage extends BaseAuthMessage {
+public record CanonicalAuthenticationMessage(
+    @Getter @JsonProperty GenericEventDto eventDto) implements BaseMessage {
+
+  public static Command command = Command.AUTH;
 
   public static final String CHALLENGE = "challenge";
   public static final String RELAY = "relay";
-  @JsonProperty
-  private final GenericEventDto eventDto;
-
-  public CanonicalAuthenticationMessage(GenericEventDto eventDto) {
-    super(Command.AUTH);
-    this.eventDto = eventDto;
-  }
 
   @Override
   public String encode() throws JsonProcessingException {
@@ -57,8 +52,8 @@ public class CanonicalAuthenticationMessage extends BaseAuthMessage {
         map.get("id").toString(),
         event.getPublicKey(),
         Kind.CLIENT_AUTH,
-        event.getCreatedAt(),
         list,
+        event.getCreatedAt(),
         event.getSignature());
 
     return (T) new CanonicalAuthenticationMessage(canonEvent);
@@ -68,5 +63,10 @@ public class CanonicalAuthenticationMessage extends BaseAuthMessage {
 //    TODO: stream optional
     return genericTags.stream()
         .filter(tag -> tag.getCode().equalsIgnoreCase(attributeName)).map(GenericTag::getAttributes).toList().get(0).get(0).getValue().toString();
+  }
+
+  @Override
+  public Command getCommand() {
+    return command;
   }
 }

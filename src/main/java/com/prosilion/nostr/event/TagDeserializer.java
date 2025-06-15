@@ -24,7 +24,7 @@ public class TagDeserializer extends JsonDeserializer<BaseTag> {
 //                case "price" -> PriceTag.deserialize(node);
 //                case "relays" -> RelaysTag.deserialize(node);
 //                case "subject" -> SubjectTag.deserialize(node);
-      default -> new GenericTagDecoder().decode(node.toString());
+      default -> IDecoder.decode(node.toString());
     };
   }
 }

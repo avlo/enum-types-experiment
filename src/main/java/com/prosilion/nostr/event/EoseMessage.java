@@ -8,15 +8,13 @@ import org.springframework.lang.NonNull;
 
 import static com.prosilion.nostr.event.Encoder.ENCODER_MAPPED_AFTERBURNER;
 
-@Getter
-public class EoseMessage extends BaseMessage {
+public record EoseMessage(
+    @Getter @JsonProperty String subscriptionId) implements BaseMessage {
 
-  @JsonProperty
-  private final String subscriptionId;
+  public static Command command = Command.EOSE;
 
-  public EoseMessage(String subId) {
-    super(Command.EOSE);
-    this.subscriptionId = subId;
+  public EoseMessage(String subscriptionId) {
+    this.subscriptionId = BaseMessage.validateSubscriptionId(subscriptionId);
   }
 
   @Override
@@ -29,5 +27,10 @@ public class EoseMessage extends BaseMessage {
 
   public static <T extends BaseMessage> T decode(@NonNull Object arg) {
     return (T) new EoseMessage(arg.toString());
+  }
+
+  @Override
+  public Command getCommand() {
+    return command;
   }
 }

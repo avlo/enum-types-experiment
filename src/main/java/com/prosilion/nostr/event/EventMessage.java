@@ -1,40 +1,30 @@
 package com.prosilion.nostr.event;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.prosilion.nostr.codec.BaseEventEncoder;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.Getter;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import static com.prosilion.nostr.event.Encoder.ENCODER_MAPPED_AFTERBURNER;
 import static com.prosilion.nostr.event.IDecoder.I_DECODER_MAPPER_AFTERBURNER;
 
-@Getter
-public class EventMessage extends BaseMessage {
+public record EventMessage(
+    @Getter GenericEventDto event,
+    @Getter @Nullable String subscriptionId) implements BaseMessage {
+
+  public static Command command = Command.EVENT;
   private static final int SIZE_JSON_EVENT_wo_SIG_ID = 2;
   private static final Function<Object[], Boolean> isEventWoSig = (objArr) ->
       Objects.equals(SIZE_JSON_EVENT_wo_SIG_ID, objArr.length);
 
-  @JsonProperty
-  private final GenericEventDto event;
-
-  @JsonProperty
-  private String subscriptionId;
-
-  public EventMessage(@NonNull GenericEventDto event) {
-    super(Command.EVENT);
-    this.event = event;
-  }
-
-  public EventMessage(@NonNull GenericEventDto event, @NonNull String subscriptionId) {
-    this(event);
-    this.subscriptionId = subscriptionId;
+  public EventMessage {
+//    TODO: fix null check
+    subscriptionId = Objects.nonNull(subscriptionId) ? BaseMessage.validateSubscriptionId(subscriptionId) : null;
   }
 
   @Override
@@ -50,22 +40,26 @@ public class EventMessage extends BaseMessage {
   public static <T extends BaseMessage> T decode(@NonNull String jsonString) {
     try {
       Object[] msgArr = I_DECODER_MAPPER_AFTERBURNER.readValue(jsonString, Object[].class);
-      return isEventWoSig.apply(msgArr) ? processEvent(msgArr[1]) : processEvent(msgArr);
+      return isEventWoSig.apply(msgArr) ? processEvent(jsonString) : processEvent(msgArr, jsonString);
     } catch (Exception e) {
       throw new AssertionError("Invalid argument: " + jsonString);
     }
   }
 
-  private static <T extends BaseMessage> T processEvent(Object o) {
-    return (T) new EventMessage(convertValue((Map<String, String>) o));
+  private static <T extends BaseMessage> T processEvent(String json) throws JsonProcessingException {
+    return (T) new EventMessage(convertValue(json), null);
   }
 
-  private static <T extends BaseMessage> T processEvent(Object[] msgArr) {
-    return (T) new EventMessage(convertValue((Map<String, String>) msgArr[2]), msgArr[1].toString());
+  private static <T extends BaseMessage> T processEvent(Object[] msgArr, String json) throws JsonProcessingException {
+    return (T) new EventMessage(convertValue(json), msgArr[1].toString());
   }
 
-  private static GenericEventDto convertValue(Map<String, String> map) {
-    return I_DECODER_MAPPER_AFTERBURNER.convertValue(map, new TypeReference<>() {
-    });
+  private static GenericEventDto convertValue(String json) throws JsonProcessingException {
+    return I_DECODER_MAPPER_AFTERBURNER.readValue(json, GenericEventDto.class);
+  }
+
+  @Override
+  public Command getCommand() {
+    return command;
   }
 }

@@ -8,26 +8,28 @@ import org.springframework.lang.NonNull;
 
 import static com.prosilion.nostr.event.Encoder.ENCODER_MAPPED_AFTERBURNER;
 
-@Getter
-public class RelayAuthenticationMessage extends BaseAuthMessage {
+public record RelayAuthenticationMessage(
+    @Getter @JsonProperty String challenge) implements BaseMessage {
+  public static Command command = Command.AUTH;
 
-    @JsonProperty
-    private final String challenge;
+  public RelayAuthenticationMessage(String challenge) {
+    this.challenge = challenge;
+  }
 
-    public RelayAuthenticationMessage(String challenge) {
-        super(Command.AUTH);
-        this.challenge = challenge;
-    }
+  @Override
+  public String encode() throws JsonProcessingException {
+    return ENCODER_MAPPED_AFTERBURNER.writeValueAsString(
+        JsonNodeFactory.instance.arrayNode()
+            .add(getCommand().name())
+            .add(getChallenge()));
+  }
 
-    @Override
-    public String encode() throws JsonProcessingException {
-        return ENCODER_MAPPED_AFTERBURNER.writeValueAsString(
-            JsonNodeFactory.instance.arrayNode()
-                .add(getCommand().name())
-                .add(getChallenge()));
-    }
+  public static <T extends BaseMessage> T decode(@NonNull Object arg) {
+    return (T) new RelayAuthenticationMessage(arg.toString());
+  }
 
-    public static <T extends BaseMessage> T decode(@NonNull Object arg) {
-        return (T) new RelayAuthenticationMessage(arg.toString());
-    }
+  @Override
+  public Command getCommand() {
+    return command;
+  }
 }

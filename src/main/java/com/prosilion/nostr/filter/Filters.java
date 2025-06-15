@@ -18,8 +18,8 @@ public record Filters(
     this(filterablesByDefaultType.stream().collect(groupingBy(Filterable::getFilterKey)), DEFAULT_FILTERS_LIMIT);
   }
 
-  public Filters(Integer limit, Filterable... filterablesByDefaultType) {
-    this(List.of(filterablesByDefaultType), limit);
+  public Filters(Filterable... filterablesByDefaultType) {
+    this(List.of(filterablesByDefaultType));
   }
 
   public Filters(List<Filterable> filterablesByDefaultType, Integer limit) {
